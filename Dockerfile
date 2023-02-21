@@ -53,7 +53,7 @@ RUN apt-get -y update -qq --fix-missing && \
         gcc && \
     apt-get autoremove -y && \
     apt-get clean && \
-    rm -rf /microsocks /var/lib/apt/lists/* && \
+    rm -rf /microsocks /tinyproxy /var/lib/apt/lists/* && \
 # tinyproxy configuration file
     echo $'Port 8888\nMaxClients 100\nStartServers 10\nTimeout 600\n#BasicAuth user password\n' >> /etc/tinyproxy.conf && \
 # startup.sh
