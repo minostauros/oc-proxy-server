@@ -31,6 +31,7 @@ RUN apt-get -y update -qq --fix-missing && \
     cd /microsocks && \
     make && \
     make install && \
+    cd / && \
     wget https://github.com/tinyproxy/tinyproxy/archive/${TINYPROXY_VERSION}.zip -O tinyproxy.zip --progress=bar:force:noscroll && \
     unzip -q tinyproxy.zip && \
     rm tinyproxy.zip && \
