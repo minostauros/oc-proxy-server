@@ -18,6 +18,7 @@ RUN apt-get -y update -qq --fix-missing && \
     apt-get -y install --no-install-recommends \
         git \
         make \
+        automake \
         unzip \
         wget \
         ca-certificates \
@@ -48,6 +49,7 @@ RUN apt-get -y update -qq --fix-missing && \
         unzip \
         git \
         make \
+        automake \
         wget \
         build-essential \
         ca-certificates \
@@ -56,7 +58,7 @@ RUN apt-get -y update -qq --fix-missing && \
     apt-get clean && \
     rm -rf /microsocks /tinyproxy /var/lib/apt/lists/* && \
 # tinyproxy configuration file
-    echo $'Port 8888\nMaxClients 100\nStartServers 10\nTimeout 600\n#BasicAuth user password\n' >> /etc/tinyproxy.conf && \
+    echo $'Port 8888\nMaxClients 100\nTimeout 600\n#BasicAuth user password\n' >> /etc/tinyproxy.conf && \
 # startup.sh
     echo $'#!/bin/sh\n\n\
 set -ex\n\n# Set proxy port\n\
