@@ -3,6 +3,7 @@ FROM    ubuntu:20.04
 WORKDIR    /
 
 ARG MICROSOCKS_VERSION=1.0.3
+ARG TINYPROXY_VERSION=1.11.1
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -25,12 +26,20 @@ RUN apt-get -y update -qq --fix-missing && \
         iputils-ping && \
     wget https://github.com/rofl0r/microsocks/archive/v${MICROSOCKS_VERSION}.zip -O microsocks.zip --progress=bar:force:noscroll && \
     unzip -q microsocks.zip && \
+    rm microsocks.zip && \
     mv /microsocks-${MICROSOCKS_VERSION} /microsocks && \
     cd /microsocks && \
     make && \
     make install && \
+    wget https://github.com/tinyproxy/tinyproxy/archive/${TINYPROXY_VERSION}.zip -O tinyproxy.zip --progress=bar:force:noscroll && \
+    unzip -q tinyproxy.zip && \
+    rm tinyproxy.zip && \
+    mv /tinyproxy-${TINYPROXY_VERSION} /tinyproxy && \
+    cd /tinyproxy && \
+    ./configure && \
+    make && \
+    make install && \
     apt-get -y install --no-install-recommends \
-        tinyproxy \
         openconnect && \
 # cleaning
    apt-get -y remove \
