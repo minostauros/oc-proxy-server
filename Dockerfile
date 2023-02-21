@@ -37,6 +37,7 @@ RUN apt-get -y update -qq --fix-missing && \
     rm tinyproxy.zip && \
     mv /tinyproxy-${TINYPROXY_VERSION} /tinyproxy && \
     cd /tinyproxy && \
+    ./autogen.sh && \
     ./configure && \
     make && \
     make install && \
