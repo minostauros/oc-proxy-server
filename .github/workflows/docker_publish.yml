@@ -5,8 +5,8 @@ on:
     branches:
       - '**'
     tags:
-      - 'v*.*.*'
-      - 'v*.*'
+      - '*.*.*'
+      - '*.*'
   pull_request:
     branches:
       - 'master'
