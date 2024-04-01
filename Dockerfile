@@ -4,6 +4,7 @@ WORKDIR    /
 
 ARG MICROSOCKS_VERSION=1.0.3
 ARG TINYPROXY_VERSION=1.11.1
+ARG OPENCONNECT_VERSION=9.12
 
 # Needed for string substitution
 SHELL ["/bin/bash", "-c"]
@@ -24,7 +25,33 @@ RUN apt-get -y update -qq --fix-missing && \
         ca-certificates \
         build-essential \
         gcc \
-        iputils-ping && \
+        iputils-ping \
+# install packages for openconnect
+        pkg-config \
+        autoconf \
+        libxml2 \
+        openssl \
+        libtool \
+        gettext \
+        zlib1g-dev \
+        libxml2-dev \
+        libssl-dev \
+        libp11-dev \
+        libproxy-dev \
+        libstoken-dev \
+        libpcsclite-dev \
+        libgnutls28-dev \
+        curl \
+        libcurl4-openssl-dev \
+        libc6-dev-i386 \
+        libevent-dev \
+        liblwip-dev \
+        python3 \
+        python3-dev \
+        python3-pip \
+        default-jre \
+        && \
+# microsocks
     wget https://github.com/rofl0r/microsocks/archive/v${MICROSOCKS_VERSION}.zip -O microsocks.zip --progress=bar:force:noscroll && \
     unzip -q microsocks.zip && \
     rm microsocks.zip && \
@@ -33,6 +60,8 @@ RUN apt-get -y update -qq --fix-missing && \
     make && \
     make install && \
     cd / && \
+    rm -rf /microsocks && \
+# tinyproxy
     wget https://github.com/tinyproxy/tinyproxy/archive/${TINYPROXY_VERSION}.zip -O tinyproxy.zip --progress=bar:force:noscroll && \
     unzip -q tinyproxy.zip && \
     rm tinyproxy.zip && \
@@ -42,8 +71,28 @@ RUN apt-get -y update -qq --fix-missing && \
     ./configure && \
     make && \
     make install && \
-    apt-get -y install --no-install-recommends \
-        openconnect && \
+    cd / && \
+    rm -rf /tinyproxy && \
+# openconnect
+    mkdir -p /openconnect && \
+    cd /openconnect && \
+    wget https://gitlab.com/openconnect/openconnect/-/archive/v${OPENCONNECT_VERSION}/openconnect-v${OPENCONNECT_VERSION}.zip -O openconnect.zip --progress=bar:force:noscroll && \
+    unzip -q openconnect.zip && \
+    rm openconnect.zip && \
+    ls -lah && \
+    mv openconnect-v${OPENCONNECT_VERSION}/* /openconnect/ && \
+    mkdir -p /etc/vpnc && \
+    wget https://gitlab.com/openconnect/vpnc-scripts/-/raw/master/vpnc-script -O /etc/vpnc/vpnc-script --progress=bar:force:noscroll && \
+    chmod +x /etc/vpnc/vpnc-script && \
+    ./autogen.sh && \
+    ./configure && \
+    make && \
+    make install && \
+    cd / && \
+# python packages for openconnect tncc
+    pip install mechanize netifaces urlgrabber asn1crypto && \
+# set default python
+    update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
 # cleaning
    apt-get -y remove \
         unzip \
@@ -51,12 +100,13 @@ RUN apt-get -y update -qq --fix-missing && \
         make \
         automake \
         wget \
-        build-essential \
-        ca-certificates \
-        gcc && \
+        gcc \
+        pkg-config \
+        autoconf \
+        && \
     apt-get autoremove -y && \
     apt-get clean && \
-    rm -rf /microsocks /tinyproxy /var/lib/apt/lists/* && \
+    rm -rf /var/lib/apt/lists/* && \
 # tinyproxy configuration file
     echo $'Port 8888\nMaxClients 100\nTimeout 600\n#BasicAuth user password\n' >> /etc/tinyproxy.conf && \
 # startup.sh
